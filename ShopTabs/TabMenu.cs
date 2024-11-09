@@ -9,7 +9,7 @@ namespace ShopTabs
 {
     internal class TabMenu : IClickableMenu
     {
-        public static List<string> catagories = new List<string>
+        public static List<string> catagories = new()
         {
             "Forage", // type = Basic, catagory == -81
             "Seeds", // type == Seeds, category == -74

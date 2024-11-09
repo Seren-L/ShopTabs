@@ -14,7 +14,6 @@ namespace ShopTabs
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        public static PerScreen<ShopTab> ShopTabList = new PerScreen<ShopTab>();
         /*********
         ** Public methods
         *********/
@@ -23,7 +22,7 @@ namespace ShopTabs
         public override void Entry(IModHelper helper)
         {
             helper.Events.Display.MenuChanged += this.OnMenuChanged;
-            helper.Events.Input.ButtonPressed += this.onButtonPressed;
+            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
         }
 
 
@@ -45,7 +44,7 @@ namespace ShopTabs
                 if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId != "Joja" || menu.ShopId == "Traveller")
                 {
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
-                    foreach (Item i in itemStock.Keys) {
+                    foreach (Item i in itemStock.Keys.Cast<Item>()) {
                         Console.WriteLine(i.Category + i.QualifiedItemId + i.DisplayName);
                     }
                 }
@@ -53,7 +52,7 @@ namespace ShopTabs
 
         }
 
-        private void onButtonPressed(object? sender, ButtonPressedEventArgs e)
+        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
             this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
             if (this.Helper.Input.IsDown(SButton.H))
