@@ -14,8 +14,7 @@ namespace ShopTabs
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        public static PerScreen<CatagoryMenu> CatagoryMenuList = new PerScreen<CatagoryMenu>();
-
+        public static PerScreen<ShopTab> ShopTabList = new PerScreen<ShopTab>();
         /*********
         ** Public methods
         *********/
@@ -24,6 +23,7 @@ namespace ShopTabs
         public override void Entry(IModHelper helper)
         {
             helper.Events.Display.MenuChanged += this.OnMenuChanged;
+            helper.Events.Input.ButtonPressed += this.onButtonPressed;
         }
 
 
@@ -40,10 +40,26 @@ namespace ShopTabs
         {
             if (Game1.activeClickableMenu != null && e.NewMenu is ShopMenu menu)
             {
-                this.Monitor.Log($"Shop menu opened.", LogLevel.Debug);
-                CatagoryMenuList.Value = new CatagoryMenu(menu);
+                this.Monitor.Log($"Shop menu {menu.ShopId} opened.", LogLevel.Debug);
+
+                if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId != "Joja" || menu.ShopId == "Traveller")
+                {
+                    Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
+                    foreach (Item i in itemStock.Keys) {
+                        Console.WriteLine(i.Category + i.QualifiedItemId + i.DisplayName);
+                    }
+                }
             }
-            
+
+        }
+
+        private void onButtonPressed(object? sender, ButtonPressedEventArgs e)
+        {
+            this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
+            if (this.Helper.Input.IsDown(SButton.H))
+            {
+                Utility.TryOpenShopMenu("SeedShop", "P");
+            }
         }
 
     }
