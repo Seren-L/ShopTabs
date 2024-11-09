@@ -14,6 +14,7 @@ namespace ShopTabs
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
+        public static PerScreen<TabMenu> TabMenuList = new PerScreen<TabMenu>();
         /*********
         ** Public methods
         *********/
@@ -44,9 +45,18 @@ namespace ShopTabs
                 if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId != "Joja" || menu.ShopId == "Traveller")
                 {
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
-                    foreach (Item i in itemStock.Keys.Cast<Item>()) {
-                        Console.WriteLine(i.Category + i.QualifiedItemId + i.DisplayName);
+                    foreach (var item in itemStock.Keys)
+                    {
+                        if (item is StardewValley.Object obj)
+                        {
+                            Console.WriteLine(obj.Category + obj.Type + obj.DisplayName);
+                        }
+                        else
+                        {
+                            this.Monitor.Log("Encountered a non-object item in item stock.", LogLevel.Warn);
+                        }
                     }
+                    TabMenuList.Value = new TabMenu(menu, itemStock);
                 }
             }
 
@@ -54,9 +64,9 @@ namespace ShopTabs
 
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
             if (this.Helper.Input.IsDown(SButton.H))
             {
+                this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
                 Utility.TryOpenShopMenu("SeedShop", "P");
             }
         }
