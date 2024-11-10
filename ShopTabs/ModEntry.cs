@@ -14,7 +14,7 @@ namespace ShopTabs
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        public static PerScreen<TabMenu> TabMenuList = new PerScreen<TabMenu>();
+        public static PerScreen<TabMenu> TabMenuList = new();
         /*********
         ** Public methods
         *********/

@@ -15,6 +15,10 @@ namespace ShopTabs
     {
         public ShopMenu targetMenu;
 
+        public Dictionary<ISalable, ItemStockInformation> shopItems;
+
+        public List<ClickableTextureComponent> filterTabs = new();
+
         public static List<string> filterTypes = new()
         {
             "Seeds", // type == Seeds, category == -74
@@ -26,18 +30,28 @@ namespace ShopTabs
             "Other"
         };
 
-        public List<ClickableTextureComponent> filterTabs = new();
-
         public TabMenu(ShopMenu menu, Dictionary<ISalable, ItemStockInformation> shopItems)
         {
             this.targetMenu = menu;
             menu.SetChildMenu(this);
+            this.shopItems = shopItems;
 
-            ClickableTextureComponent seedsTab = new ClickableTextureComponent(
-                "Seeds", new Rectangle(menu.xPositionOnScreen, menu.yPositionOnScreen - 64, 64, 64), "",
-                "Seeds", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
+            if (shopItems != null)
+            {
+                ClickableTextureComponent seedsTab = new(
+                    "Seeds", new Rectangle(menu.xPositionOnScreen, menu.yPositionOnScreen - 64, 64, 64), "",
+                    "Seeds", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
 
-            filterTabs.Add(seedsTab);
+                filterTabs.Add(seedsTab);
+            }
+        }
+
+        public void ApplyTab(string type)
+        {
+            if (type == filterTypes[0])
+            {
+                
+            }
         }
 
         public override void draw(SpriteBatch b)
@@ -45,7 +59,6 @@ namespace ShopTabs
             base.draw(b);
             foreach (ClickableTextureComponent tab in filterTabs)
             {
-                Console.WriteLine("drawing tab");
                 tab.draw(b);
             }
             drawMouse(b);
@@ -67,6 +80,18 @@ namespace ShopTabs
 
             if (!hoveredOverAnyTab)
                 targetMenu.performHoverAction(x, y); // Forward hover action to ShopMenu if not hovering over any tabs
+        }
+
+        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        {
+            foreach (ClickableTextureComponent tab in filterTabs)
+            {
+                if (tab.containsPoint(x, y))
+                {
+                    ApplyTab(tab.name);
+                }
+            }
+            targetMenu.receiveLeftClick(x, y, playSound);
         }
 
         public override void receiveScrollWheelAction(int direction)
