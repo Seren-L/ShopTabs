@@ -42,8 +42,9 @@ namespace ShopTabs
             {
                 this.Monitor.Log($"Shop menu {menu.ShopId} opened.", LogLevel.Debug);
 
-                if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId != "Joja" || menu.ShopId == "Traveller")
+                if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId == "Joja" || menu.ShopId == "Traveler")
                 {
+                    this.Monitor.Log($"Detected SeedShop or Joja.", LogLevel.Debug);
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
                     foreach (var item in itemStock.Keys)
                     {
@@ -67,7 +68,7 @@ namespace ShopTabs
             if (this.Helper.Input.IsDown(SButton.H))
             {
                 this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
-                Utility.TryOpenShopMenu("SeedShop", "P");
+                Utility.TryOpenShopMenu("Traveler", "P");
             }
         }
 
