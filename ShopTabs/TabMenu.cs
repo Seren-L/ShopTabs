@@ -112,7 +112,7 @@ namespace ShopTabs
 
         public override void draw(SpriteBatch b)
         {
-            base.draw(b);
+            targetMenu.draw(b);
             foreach (ClickableTextureComponent tab in filterTabs)
             {
                 tab.draw(b);
@@ -122,20 +122,11 @@ namespace ShopTabs
 
         public override void performHoverAction(int x, int y)
         {
-            base.performHoverAction(x, y);
-            bool hoveredOverAnyTab = false;
-
-            foreach (ClickableTextureComponent tab in filterTabs)
+            targetMenu.performHoverAction(x, y);
+            foreach(ClickableTextureComponent tab in filterTabs)
             {
-                if (tab.containsPoint(x, y))
-                {
-                    tab.tryHover(x, y);
-                    hoveredOverAnyTab = true;
-                }
+                tab.tryHover(x, y);
             }
-
-            if (!hoveredOverAnyTab)
-                targetMenu.performHoverAction(x, y); // Forward hover action to ShopMenu if not hovering over any tabs
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
