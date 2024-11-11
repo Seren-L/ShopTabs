@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
 
 namespace ShopTabs
 {
@@ -43,12 +44,24 @@ namespace ShopTabs
                 foreach (string filterType in FilterConditions.Keys)
                 {
                     string assetName = "assets/" + filterType;
+
+                    // ensure the asset exists
+                    Texture2D asset;
+                    try
+                    {
+                        asset = ModEntry.Content.Load<Texture2D>(assetName);
+                    }
+                    catch (ContentLoadException)
+                    {
+                        asset = ModEntry.Content.Load<Texture2D>("assets/TestTab");
+                    }
+
                     ClickableTextureComponent tab = new(
                         filterType,
                         new Rectangle(menu.xPositionOnScreen + 64 * i, menu.yPositionOnScreen - 60, 64, 64),
                         "",
                         filterType,
-                        ModEntry.Content.Load<Texture2D>(assetName),
+                        asset,
                         new Rectangle(0, 0, 16, 16),
                         4f);
                     filterTabs.Add(tab);
