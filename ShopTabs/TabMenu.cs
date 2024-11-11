@@ -19,15 +19,16 @@ namespace ShopTabs
 
         public List<ClickableTextureComponent> filterTabs = new();
 
-        public static List<string> filterTypes = new()
+        // Define filter types and their conditions in a dictionary
+        public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
         {
-            "Seeds", // type == Seeds, category == -74
-            "Saplings", // type == Basic, catagory == -74
-            "Cooking", // type == Cooking, catagory == -7
-            "Fertillizer", // type == Basic, catagory == -19
-            "Crops", // type == Basic, catagory == -75
-            "Recipes",
-            "Other"
+            { "Seeds", obj => obj.Type == "Seeds" && obj.Category == -74 },
+            { "Saplings", obj => obj.Type == "Basic" && obj.Category == -74 },
+            { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 },
+            { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
+            { "Crops", obj => obj.Type == "Basic" && obj.Category == -75 },
+            { "Recipes", obj => obj.IsRecipe },
+            { "Other", obj => !new[] { -74, -7, -19, -75 }.Contains(obj.Category) && !obj.IsRecipe }
         };
 
         public TabMenu(ShopMenu menu, Dictionary<ISalable, ItemStockInformation> shopItems)
@@ -38,13 +39,20 @@ namespace ShopTabs
 
             if (shopItems != null)
             {
-                for (int i = 0; i < filterTypes.Count; i++)
+                int i = 0;
+                foreach (string filterType in FilterConditions.Keys)
                 {
-                    string assetName = "assets/" + filterTypes[i];
+                    string assetName = "assets/" + filterType;
                     ClickableTextureComponent tab = new(
-                            filterTypes[i], new Rectangle(menu.xPositionOnScreen + 64 * i, menu.yPositionOnScreen - 60, 64, 64), "",
-                            filterTypes[i], ModEntry.Content.Load<Texture2D>(assetName), new Rectangle(0, 0, 16, 16), 4f);
+                        filterType,
+                        new Rectangle(menu.xPositionOnScreen + 64 * i, menu.yPositionOnScreen - 60, 64, 64),
+                        "",
+                        filterType,
+                        ModEntry.Content.Load<Texture2D>(assetName),
+                        new Rectangle(0, 0, 16, 16),
+                        4f);
                     filterTabs.Add(tab);
+                    i++;
                 }
             }
         }
@@ -53,40 +61,20 @@ namespace ShopTabs
         {
             Dictionary<ISalable, ItemStockInformation> newStock = new();
 
-            foreach (var item in this.shopItems)
+            // Use the condition from the dictionary
+            if (FilterConditions.TryGetValue(type, out Func<StardewValley.Object, bool>? condition))
             {
-                if (item.Key is StardewValley.Object obj && MatchItemType(obj, type))
+                foreach (var item in this.shopItems)
                 {
-                    newStock[item.Key] = item.Value;
+                    if (item.Key is StardewValley.Object obj && condition(obj))
+                    {
+                        newStock[item.Key] = item.Value;
+                    }
                 }
             }
 
             targetMenu.itemPriceAndStock = newStock;
             targetMenu.forSale = newStock.Keys.ToList();
-        }
-
-        public static bool MatchItemType(StardewValley.Object obj, string type)
-        {
-            int[] categories = { -74, -7, -19, -75 }; // update this list if new types are added
-            switch (type)
-            {
-                case "Seeds":
-                    return obj.Type == "Seeds" && obj.Category == -74;
-                case "Saplings":
-                    return obj.Type == "Basic" && obj.Category == -74;
-                case "Cooking":
-                    return obj.Type == "Cooking" && obj.Category == -7;
-                case "Fertillizer":
-                    return obj.Type == "Basic" && obj.Category == -19;
-                case "Crops":
-                    return obj.Type == "Basic" && obj.Category == -75;
-                case "Recipes":
-                    return obj.IsRecipe;
-                case "Other":
-                    return !(categories.Contains(obj.Category) || obj.IsRecipe);
-                default:
-                    return false;
-            };
         }
 
         public override void draw(SpriteBatch b)
