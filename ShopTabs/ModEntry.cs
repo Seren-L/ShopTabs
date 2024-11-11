@@ -15,6 +15,9 @@ namespace ShopTabs
     internal sealed class ModEntry : Mod
     {
         public static PerScreen<TabMenu> TabMenuList = new();
+
+        public static IModContentHelper Content;
+
         /*********
         ** Public methods
         *********/
@@ -24,6 +27,7 @@ namespace ShopTabs
         {
             helper.Events.Display.MenuChanged += this.OnMenuChanged;
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            Content = base.Helper.ModContent;
         }
 
 
@@ -68,7 +72,7 @@ namespace ShopTabs
             if (this.Helper.Input.IsDown(SButton.H))
             {
                 this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
-                Utility.TryOpenShopMenu("Traveler", "P");
+                Utility.TryOpenShopMenu("SeedShop", "P");
             }
         }
 

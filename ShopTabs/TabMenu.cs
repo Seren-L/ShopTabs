@@ -38,35 +38,14 @@ namespace ShopTabs
 
             if (shopItems != null)
             {
-                ClickableTextureComponent seedsTab = new(
-                    "Seeds", new Rectangle(menu.xPositionOnScreen, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Seeds", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent saplingsTab = new(
-                    "Saplings", new Rectangle(menu.xPositionOnScreen + 64, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Saplings", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent cookingTab = new(
-                    "Cooking", new Rectangle(menu.xPositionOnScreen + 128, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Cooking", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent fertillizerTab = new(
-                    "Fertillizer", new Rectangle(menu.xPositionOnScreen + 192, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Fertillizer", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent cropsTab = new(
-                    "Crops", new Rectangle(menu.xPositionOnScreen + 256, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Crops", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent recipeTab = new(
-                    "Recipes", new Rectangle(menu.xPositionOnScreen + 320, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Recipes", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-                ClickableTextureComponent otherTab = new(
-                    "Other", new Rectangle(menu.xPositionOnScreen + 384, menu.yPositionOnScreen - 64, 64, 64), "",
-                    "Other", Game1.mouseCursors, new Rectangle(16, 368, 16, 16), 4f);
-
-                filterTabs.Add(seedsTab);
-                filterTabs.Add(saplingsTab);
-                filterTabs.Add(cookingTab);
-                filterTabs.Add(fertillizerTab);
-                filterTabs.Add(cropsTab);
-                filterTabs.Add(recipeTab);
-                filterTabs.Add(otherTab);
+                for (int i = 0; i < filterTypes.Count; i++)
+                {
+                    string assetName = "assets/" + filterTypes[i];
+                    ClickableTextureComponent tab = new(
+                            filterTypes[i], new Rectangle(menu.xPositionOnScreen + 64 * i, menu.yPositionOnScreen - 60, 64, 64), "",
+                            filterTypes[i], ModEntry.Content.Load<Texture2D>(assetName), new Rectangle(0, 0, 16, 16), 4f);
+                    filterTabs.Add(tab);
+                }
             }
         }
 
@@ -88,8 +67,8 @@ namespace ShopTabs
 
         public static bool MatchItemType(StardewValley.Object obj, string type)
         {
-            int[] categories = {-74, -7, -19, -75}; // update this list if new types are added
-            switch(type)
+            int[] categories = { -74, -7, -19, -75 }; // update this list if new types are added
+            switch (type)
             {
                 case "Seeds":
                     return obj.Type == "Seeds" && obj.Category == -74;
@@ -123,7 +102,7 @@ namespace ShopTabs
         public override void performHoverAction(int x, int y)
         {
             targetMenu.performHoverAction(x, y);
-            foreach(ClickableTextureComponent tab in filterTabs)
+            foreach (ClickableTextureComponent tab in filterTabs)
             {
                 tab.tryHover(x, y);
             }
