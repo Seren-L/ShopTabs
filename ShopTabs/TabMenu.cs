@@ -33,6 +33,9 @@ namespace ShopTabs
             { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
             { "Crops", obj => obj.Type == "Basic" && obj.Category == -75 },
             { "Recipes", obj => obj.IsRecipe },
+            { "Animal Product", obj => obj.Type == "Basic" && (obj.Category == -6 || obj.Category == -5) },
+            { "Fish" , obj => obj.Type == "Fish" && obj.Category == -4 },
+            { "Artisan", obj => obj.Type == "Basic" && (obj.Category == -26 || obj.Category == -27) },
             { "Other", obj => !new[] { -74, -7, -19, -75 }.Contains(obj.Category) && !obj.IsRecipe }
         };
 
