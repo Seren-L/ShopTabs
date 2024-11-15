@@ -45,11 +45,8 @@ namespace ShopTabs
         {
             if (Game1.activeClickableMenu != null && e.NewMenu is ShopMenu menu)
             {
-                this.Monitor.Log($"Shop menu {menu.ShopId} opened.", LogLevel.Debug);
-
                 if (menu.ShopId != null)
                 {
-                    this.Monitor.Log($"Detected SeedShop or Joja.", LogLevel.Debug);
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
                     foreach (var item in itemStock.Keys)
                     {
@@ -60,6 +57,11 @@ namespace ShopTabs
                         else
                         {
                             this.Monitor.Log("Encountered a non-object item in item stock.", LogLevel.Warn);
+                            //display all known properties of the item
+                            foreach (var prop in item.GetType().GetProperties())
+                            {
+                                this.Monitor.Log(prop.Name + ": " + prop.GetValue(item), LogLevel.Warn);
+                            }
                         }
                     }
                     TabMenuList.Value = new TabMenu(menu, itemStock);
@@ -72,7 +74,6 @@ namespace ShopTabs
         {
             if (this.Helper.Input.IsDown(SButton.H))
             {
-                this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
                 Utility.TryOpenShopMenu("SeedShop", "P");
             }
         }
