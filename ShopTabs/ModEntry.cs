@@ -75,10 +75,10 @@ namespace ShopTabs
 
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            if (this.Helper.Input.IsDown(SButton.H))
-            {
-                Utility.TryOpenShopMenu("SeedShop", "P");
-            }
+            //if (this.Helper.Input.IsDown(SButton.H))
+            //{
+            //    Utility.TryOpenShopMenu("SeedShop", "P");
+            //}
         }
 
         private void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)

@@ -20,8 +20,6 @@ namespace ShopTabs
 
         public List<ClickableTextureComponent> filterTabs = new();
 
-        public ClickableTextureComponent allTab;
-
         private ClickableTextureComponent? hoveredTab;
 
         private List<string> availableTabs = new();
@@ -29,7 +27,7 @@ namespace ShopTabs
         // Define filter types and their conditions in a dictionary
         public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
         {
-            { "Seeds", obj => obj.Type == "Seeds" && obj.Category == -74 },
+            { "Seeds", obj => (obj.Type == "Seeds" || obj.Type == "Seed") && obj.Category == -74 },
             { "Saplings", obj => obj.Type == "Basic" && obj.Category == -74 },
             { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 && !obj.IsRecipe },
             { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
@@ -37,9 +35,15 @@ namespace ShopTabs
             { "Recipes", obj => obj.IsRecipe },
             { "Animal Product", obj => obj.Type == "Basic" && (obj.Category == -6 || obj.Category == -5) },
             { "Fish" , obj => obj.Type == "Fish" && obj.Category == -4 },
-            { "Artisan", obj => obj.Type == "Basic" && (obj.Category == -26 || obj.Category == -27) },
+            { "Artisan", obj => (obj.Type == "Basic" || obj.Type == "ArtisanGoods") && (obj.Category == -26 || obj.Category == -27) },
+            { "Flowers", obj => obj.Type == "Basic" && obj.Category == -80 },
+            { "Minerals", obj => obj.Type == "Basic" && (obj.Category == -15 || obj.Category == -12 || obj.Category == -2)},
+            { "Crafting", obj => obj.Type == "Crafting" && !obj.IsRecipe},
+            { "Monster Drops", obj => obj.Type == "Basic" && obj.Category == -28},
+            { "Bait", obj => obj.Type == "Basic" && obj.Category == -21},
+            { "Artifacts", obj => obj.Type == "Arch"},
             { "All" , obj => true },
-            { "Other", obj => !new[] { -74, -7, -19, -75 }.Contains(obj.Category) && !obj.IsRecipe }
+            { "Other", obj => !FilterConditions.Values.Any(condition => condition(obj)) }
         };
 
         public TabMenu(ShopMenu menu, Dictionary<ISalable, ItemStockInformation> shopItems)
@@ -49,7 +53,7 @@ namespace ShopTabs
             this.shopItems = shopItems;
             GetAvaliableTabs(shopItems);
 
-            if (shopItems != null)
+            if (shopItems != null && availableTabs.Count > 1)
             {
                 int i = 0;
                 foreach (string filterType in availableTabs)
@@ -120,10 +124,24 @@ namespace ShopTabs
             {
                 foreach (var item in this.shopItems)
                 {
-                    if (item.Key is StardewValley.Object obj && condition(obj))
+                    if (item.Key is StardewValley.Object obj)
                     {
-                        newStock[item.Key] = item.Value;
+                        if (condition(obj))
+                            newStock[item.Key] = item.Value;
                     }
+                    else
+                    {
+                        if (type == "Other")
+                            newStock[item.Key] = item.Value;
+
+                        Console.WriteLine("Encountered a non-object item in item stock. Added to other.");
+                        // display all known properties of the item
+                        foreach (var prop in item.Key.GetType().GetProperties())
+                        {
+                            Console.WriteLine(prop.Name + ": " + prop.GetValue(item.Key));
+                        }
+                    }
+
                 }
             }
 
