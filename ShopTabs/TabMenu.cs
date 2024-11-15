@@ -20,6 +20,8 @@ namespace ShopTabs
 
         public List<ClickableTextureComponent> filterTabs = new();
 
+        public ClickableTextureComponent allTab;
+
         private ClickableTextureComponent? hoveredTab;
 
         private List<string> availableTabs = new();
@@ -36,6 +38,7 @@ namespace ShopTabs
             { "Animal Product", obj => obj.Type == "Basic" && (obj.Category == -6 || obj.Category == -5) },
             { "Fish" , obj => obj.Type == "Fish" && obj.Category == -4 },
             { "Artisan", obj => obj.Type == "Basic" && (obj.Category == -26 || obj.Category == -27) },
+            { "All" , obj => true },
             { "Other", obj => !new[] { -74, -7, -19, -75 }.Contains(obj.Category) && !obj.IsRecipe }
         };
 
@@ -95,11 +98,16 @@ namespace ShopTabs
 
                 }
             }
-            // if "Other" is in available tabs, put it to the last
+            // ensure the last two in the list are "Other" and "All", as long as they already exist
             if (availableTabs.Contains("Other"))
             {
                 availableTabs.Remove("Other");
                 availableTabs.Add("Other");
+            }
+            if (availableTabs.Contains("All"))
+            {
+                availableTabs.Remove("All");
+                availableTabs.Add("All");
             }
         }
 
