@@ -20,12 +20,14 @@ namespace ShopTabs
 
         public List<ClickableTextureComponent> filterTabs = new();
 
+        private ClickableTextureComponent? hoveredTab;
+
         // Define filter types and their conditions in a dictionary
         public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
         {
             { "Seeds", obj => obj.Type == "Seeds" && obj.Category == -74 },
             { "Saplings", obj => obj.Type == "Basic" && obj.Category == -74 },
-            { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 },
+            { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 && !obj.IsRecipe },
             { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
             { "Crops", obj => obj.Type == "Basic" && obj.Category == -75 },
             { "Recipes", obj => obj.IsRecipe },
@@ -97,15 +99,26 @@ namespace ShopTabs
             {
                 tab.draw(b);
             }
+
+            if (hoveredTab != null)
+            {
+                IClickableMenu.drawHoverText(b, hoveredTab.hoverText, Game1.smallFont);
+            }
+
             drawMouse(b);
         }
 
         public override void performHoverAction(int x, int y)
         {
             targetMenu.performHoverAction(x, y);
+            hoveredTab = null;
             foreach (ClickableTextureComponent tab in filterTabs)
             {
-                tab.tryHover(x, y);
+                if (tab.containsPoint(x, y))
+                {
+                    tab.tryHover(x, y);
+                    hoveredTab = tab;
+                }
             }
         }
 

@@ -46,7 +46,7 @@ namespace ShopTabs
             {
                 this.Monitor.Log($"Shop menu {menu.ShopId} opened.", LogLevel.Debug);
 
-                if (menu.ShopId != null && menu.ShopId == "SeedShop" || menu.ShopId == "Joja" || menu.ShopId == "Traveler")
+                if (menu.ShopId != null)
                 {
                     this.Monitor.Log($"Detected SeedShop or Joja.", LogLevel.Debug);
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
