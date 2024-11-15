@@ -20,31 +20,32 @@ namespace ShopTabs
 
         public List<ClickableTextureComponent> filterTabs = new();
 
+        public ClickableTextureComponent allTab;
+
         private ClickableTextureComponent? hoveredTab;
 
         private List<string> availableTabs = new();
 
         // Define filter types and their conditions in a dictionary
         public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
-        {
-            { "Seeds", obj => (obj.Type == "Seeds" || obj.Type == "Seed") && obj.Category == -74 },
-            { "Saplings", obj => obj.Type == "Basic" && obj.Category == -74 },
-            { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 && !obj.IsRecipe },
-            { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
-            { "Crops", obj => obj.Type == "Basic" && obj.Category == -75 },
-            { "Recipes", obj => obj.IsRecipe },
-            { "Animal Product", obj => obj.Type == "Basic" && (obj.Category == -6 || obj.Category == -5) },
-            { "Fish" , obj => obj.Type == "Fish" && obj.Category == -4 },
-            { "Artisan", obj => (obj.Type == "Basic" || obj.Type == "ArtisanGoods") && (obj.Category == -26 || obj.Category == -27) },
-            { "Flowers", obj => obj.Type == "Basic" && obj.Category == -80 },
-            { "Minerals", obj => obj.Type == "Basic" && (obj.Category == -15 || obj.Category == -12 || obj.Category == -2)},
-            { "Crafting", obj => obj.Type == "Crafting" && !obj.IsRecipe},
-            { "Monster Drops", obj => obj.Type == "Basic" && obj.Category == -28},
-            { "Bait", obj => obj.Type == "Basic" && obj.Category == -21},
-            { "Artifacts", obj => obj.Type == "Arch"},
-            { "All" , obj => true },
-            { "Other", obj => !FilterConditions.Values.Any(condition => condition(obj)) }
-        };
+{
+    { "Seeds", obj => (obj.Type == "Seeds" || obj.Type == "Seed") && obj.Category == -74 },
+    { "Saplings", obj => obj.Type == "Basic" && obj.Category == -74 },
+    { "Cooking", obj => obj.Type == "Cooking" && obj.Category == -7 && !obj.IsRecipe },
+    { "Fertillizer", obj => obj.Type == "Basic" && obj.Category == -19 },
+    { "Crops", obj => (obj.Type == "Basic" || obj.Type == "Vegetable") && obj.Category == -75 },
+    { "Recipes", obj => obj.IsRecipe },
+    { "Animal Product", obj => obj.Type == "Basic" && (obj.Category == -6 || obj.Category == -5 || obj.Category == -18) },
+    { "Fish" , obj => obj.Type == "Fish" && obj.Category == -4 },
+    { "Artisan", obj => (obj.Type == "Basic" || obj.Type == "ArtisanGoods") && (obj.Category == -26 || obj.Category == -27) },
+    { "Flowers", obj => obj.Type == "Basic" && obj.Category == -80 },
+    { "Minerals", obj => obj.Type == "Minerals" && (obj.Category == -15 || obj.Category == -12 || obj.Category == -2)},
+    { "Crafting", obj => obj.Type == "Crafting" && !obj.IsRecipe},
+    { "Monster Drops", obj => obj.Type == "Basic" && obj.Category == -28},
+    { "Bait", obj => obj.Type == "Basic" && obj.Category == -21},
+    { "Artifacts", obj => obj.Type == "Arch"},
+    { "Other", obj => !FilterConditions.Where(kvp => kvp.Key != "Other").Any(kvp => kvp.Value(obj)) }
+};
 
         public TabMenu(ShopMenu menu, Dictionary<ISalable, ItemStockInformation> shopItems)
         {
@@ -82,6 +83,16 @@ namespace ShopTabs
                     filterTabs.Add(tab);
                     i++;
                 }
+
+                // add the allTab at the right of the menu
+                allTab = new ClickableTextureComponent(
+                    "All",
+                    new Rectangle(menu.xPositionOnScreen + targetMenu.width - 128, menu.yPositionOnScreen - 60, 64, 64),
+                    "",
+                    ModEntry.Translation.Get("All"),
+                    ModEntry.Content.Load<Texture2D>("assets/All"),
+                    new Rectangle(0, 0, 16, 16),
+                    4f);
             }
         }
 
@@ -102,22 +113,30 @@ namespace ShopTabs
 
                 }
             }
-            // ensure the last two in the list are "Other" and "All", as long as they already exist
-            if (availableTabs.Contains("Other"))
+            // ensure the last tab is always "Other"
+            if (!availableTabs.Contains("Other"))
+            {
+                availableTabs.Add("Other");
+            }
+            else
             {
                 availableTabs.Remove("Other");
                 availableTabs.Add("Other");
             }
-            if (availableTabs.Contains("All"))
-            {
-                availableTabs.Remove("All");
-                availableTabs.Add("All");
-            }
+
         }
 
         public void ApplyTab(string type)
         {
             Dictionary<ISalable, ItemStockInformation> newStock = new();
+
+            // if the tab is "All", display all items
+            if (type == "All")
+            {
+                targetMenu.itemPriceAndStock = shopItems;
+                targetMenu.forSale = shopItems.Keys.ToList();
+                return;
+            }
 
             // Use the condition from the dictionary
             if (FilterConditions.TryGetValue(type, out Func<StardewValley.Object, bool>? condition))
@@ -133,13 +152,6 @@ namespace ShopTabs
                     {
                         if (type == "Other")
                             newStock[item.Key] = item.Value;
-
-                        Console.WriteLine("Encountered a non-object item in item stock. Added to other.");
-                        // display all known properties of the item
-                        foreach (var prop in item.Key.GetType().GetProperties())
-                        {
-                            Console.WriteLine(prop.Name + ": " + prop.GetValue(item.Key));
-                        }
                     }
 
                 }
@@ -156,6 +168,8 @@ namespace ShopTabs
             {
                 tab.draw(b);
             }
+            if (allTab != null)
+                allTab.draw(b);
 
             if (hoveredTab != null)
             {
@@ -177,6 +191,11 @@ namespace ShopTabs
                     hoveredTab = tab;
                 }
             }
+            if (allTab != null && allTab.containsPoint(x, y))
+            {
+                allTab.tryHover(x, y);
+                hoveredTab = allTab;
+            }
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
@@ -187,6 +206,10 @@ namespace ShopTabs
                 {
                     ApplyTab(tab.name);
                 }
+            }
+            if (allTab != null && allTab.containsPoint(x, y))
+            {
+                ApplyTab("All");
             }
             targetMenu.receiveLeftClick(x, y, playSound);
         }
@@ -223,6 +246,8 @@ namespace ShopTabs
                 tab.bounds = new Rectangle(targetMenu.xPositionOnScreen + 64 * i, targetMenu.yPositionOnScreen - 60, 64, 64);
                 i++;
             }
+            if (allTab != null)
+                allTab.bounds = new Rectangle(targetMenu.xPositionOnScreen + targetMenu.width - 128, targetMenu.yPositionOnScreen - 60, 64, 64);
         }
 
         public override void snapToDefaultClickableComponent()
