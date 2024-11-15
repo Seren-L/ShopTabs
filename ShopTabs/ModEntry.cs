@@ -27,6 +27,7 @@ namespace ShopTabs
         {
             helper.Events.Display.MenuChanged += this.OnMenuChanged;
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            helper.Events.Display.WindowResized += this.OnWindowSizeChanged;
             Content = base.Helper.ModContent;
         }
 
@@ -73,6 +74,14 @@ namespace ShopTabs
             {
                 this.Monitor.Log($"Key H pressed.", LogLevel.Debug);
                 Utility.TryOpenShopMenu("SeedShop", "P");
+            }
+        }
+
+        public void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)
+        {
+            if (TabMenuList.Value != null)
+            {
+                TabMenuList.Value.gameWindowSizeChanged(new Rectangle(Point.Zero, e.OldSize), new Rectangle(Point.Zero, e.NewSize));
             }
         }
 

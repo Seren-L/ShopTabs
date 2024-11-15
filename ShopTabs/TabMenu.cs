@@ -186,6 +186,19 @@ namespace ShopTabs
             return false;
         }
 
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            targetMenu.gameWindowSizeChanged(oldBounds, newBounds);
+
+            // Update the position of the tabs
+            int i = 0;
+            foreach (ClickableTextureComponent tab in filterTabs)
+            {
+                tab.bounds = new Rectangle(targetMenu.xPositionOnScreen + 64 * i, targetMenu.yPositionOnScreen - 60, 64, 64);
+                i++;
+            }
+        }
+
         public override void snapToDefaultClickableComponent()
         {
             targetMenu.snapToDefaultClickableComponent();
