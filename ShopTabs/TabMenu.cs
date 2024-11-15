@@ -22,6 +22,8 @@ namespace ShopTabs
 
         private ClickableTextureComponent? hoveredTab;
 
+        private List<string> availableTabs = new();
+
         // Define filter types and their conditions in a dictionary
         public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
         {
@@ -39,11 +41,12 @@ namespace ShopTabs
             this.targetMenu = menu;
             menu.SetChildMenu(this);
             this.shopItems = shopItems;
+            GetAvaliableTabs(shopItems);
 
             if (shopItems != null)
             {
                 int i = 0;
-                foreach (string filterType in FilterConditions.Keys)
+                foreach (string filterType in availableTabs)
                 {
                     string assetName = "assets/" + filterType;
 
@@ -69,6 +72,31 @@ namespace ShopTabs
                     filterTabs.Add(tab);
                     i++;
                 }
+            }
+        }
+
+        public void GetAvaliableTabs(Dictionary<ISalable, ItemStockInformation> shopItems)
+        {
+            List<ISalable> items = shopItems.Keys.ToList();
+            foreach (ISalable item in items)
+            {
+                if (item is StardewValley.Object obj)
+                {
+                    foreach (string filterType in FilterConditions.Keys)
+                    {
+                        if (FilterConditions[filterType](obj) && !availableTabs.Contains(filterType))
+                        {
+                            availableTabs.Add(filterType);
+                        }
+                    }
+
+                }
+            }
+            // if "Other" is in available tabs, put it to the last
+            if (availableTabs.Contains("Other"))
+            {
+                availableTabs.Remove("Other");
+                availableTabs.Add("Other");
             }
         }
 
