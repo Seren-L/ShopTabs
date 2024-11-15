@@ -71,7 +71,7 @@ namespace ShopTabs
                         filterType,
                         new Rectangle(menu.xPositionOnScreen + 64 * i, menu.yPositionOnScreen - 60, 64, 64),
                         "",
-                        filterType,
+                        ModEntry.Translation.Get(filterType),
                         asset,
                         new Rectangle(0, 0, 16, 16),
                         4f);

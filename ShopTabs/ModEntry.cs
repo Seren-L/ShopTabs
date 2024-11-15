@@ -18,6 +18,8 @@ namespace ShopTabs
 
         public static IModContentHelper Content;
 
+        public static ITranslationHelper Translation;
+
         /*********
         ** Public methods
         *********/
@@ -29,6 +31,7 @@ namespace ShopTabs
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.Display.WindowResized += this.OnWindowSizeChanged;
             Content = base.Helper.ModContent;
+            Translation = base.Helper.Translation;
         }
 
 
@@ -78,13 +81,12 @@ namespace ShopTabs
             }
         }
 
-        public void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)
+        private void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)
         {
             if (TabMenuList.Value != null)
             {
                 TabMenuList.Value.gameWindowSizeChanged(new Rectangle(Point.Zero, e.OldSize), new Rectangle(Point.Zero, e.NewSize));
             }
         }
-
     }
 }
