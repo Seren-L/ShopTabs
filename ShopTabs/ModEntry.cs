@@ -1,13 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
-using System.Reflection.Metadata;
-using Microsoft.Xna.Framework.Content;
 
 namespace ShopTabs
 {
@@ -28,7 +24,6 @@ namespace ShopTabs
         public override void Entry(IModHelper helper)
         {
             helper.Events.Display.MenuChanged += this.OnMenuChanged;
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.Display.WindowResized += this.OnWindowSizeChanged;
             Content = base.Helper.ModContent;
             Translation = base.Helper.Translation;
@@ -71,14 +66,6 @@ namespace ShopTabs
                 }
             }
 
-        }
-
-        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
-        {
-            //if (this.Helper.Input.IsDown(SButton.H))
-            //{
-            //    Utility.TryOpenShopMenu("SeedShop", "P");
-            //}
         }
 
         private void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)
