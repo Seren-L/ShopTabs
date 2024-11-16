@@ -16,6 +16,8 @@ namespace ShopTabs
 
         public static ITranslationHelper Translation;
 
+        public bool DebugMode = false;
+
         /*********
         ** Public methods
         *********/
@@ -48,24 +50,26 @@ namespace ShopTabs
                     Dictionary<ISalable, ItemStockInformation> itemStock = menu.itemPriceAndStock;
                     foreach (var item in itemStock.Keys)
                     {
-                        if (item is StardewValley.Object obj)
+                        if (DebugMode)
                         {
-                            Console.WriteLine(obj.Category + obj.Type + obj.DisplayName);
-                        }
-                        else
-                        {
-                            this.Monitor.Log("Encountered a non-object item in item stock.", LogLevel.Warn);
-                            //display all known properties of the item
-                            foreach (var prop in item.GetType().GetProperties())
+                            if (item is StardewValley.Object obj)
                             {
-                                this.Monitor.Log(prop.Name + ": " + prop.GetValue(item), LogLevel.Warn);
+                                this.Monitor.Log(obj.Category + obj.Type + obj.DisplayName, LogLevel.Info);
+                            }
+                            else
+                            {
+                                this.Monitor.Log("Encountered a non-object item in item stock.", LogLevel.Warn);
+                                //display all known properties of the item
+                                foreach (var prop in item.GetType().GetProperties())
+                                {
+                                    this.Monitor.Log(prop.Name + ": " + prop.GetValue(item), LogLevel.Warn);
+                                }
                             }
                         }
+                        TabMenuList.Value = new TabMenu(menu, itemStock);
                     }
-                    TabMenuList.Value = new TabMenu(menu, itemStock);
                 }
             }
-
         }
 
         private void OnWindowSizeChanged(object? sender, WindowResizedEventArgs e)
