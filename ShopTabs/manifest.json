@@ -1,10 +1,10 @@
 {
   "Name": "Shop Tabs",
   "Author": "AltoIgloo",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Adds tabs to all shops in the game.",
   "UniqueID": "AltoIgloo.ShopTabs",
   "EntryDll": "ShopTabs.dll",
   "MinimumApiVersion": "4.0.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "Nexus:29435", "Github:Seren-L/ShopTabs" ]
 }
