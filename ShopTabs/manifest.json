@@ -1,7 +1,7 @@
 {
   "Name": "Shop Tabs",
   "Author": "AltoIgloo",
-  "Version": "1.0.3",
+  "Version": "1.0.4",
   "Description": "Adds tabs to all shops in the game.",
   "UniqueID": "AltoIgloo.ShopTabs",
   "EntryDll": "ShopTabs.dll",

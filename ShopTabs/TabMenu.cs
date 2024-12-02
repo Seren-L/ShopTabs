@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Menus;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 
 namespace ShopTabs
 {
@@ -206,6 +207,21 @@ namespace ShopTabs
                 ApplyTab("All");
             }
             targetMenu.receiveLeftClick(x, y, playSound);
+        }
+
+        public override void receiveRightClick(int x, int y, bool playSound = true)
+        {
+            targetMenu.receiveRightClick(x, y, playSound);
+        }
+
+        public override void receiveKeyPress(Keys key)
+        {
+            targetMenu.receiveKeyPress(key);
+        }
+
+        public override void receiveGamePadButton(Buttons button)
+        {
+            targetMenu.receiveGamePadButton(button);
         }
 
         public override void receiveScrollWheelAction(int direction)

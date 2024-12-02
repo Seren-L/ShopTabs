@@ -66,8 +66,8 @@ namespace ShopTabs
                                 }
                             }
                         }
-                        TabMenuList.Value = new TabMenu(menu, itemStock);
                     }
+                    TabMenuList.Value = new TabMenu(menu, itemStock);
                 }
             }
         }
