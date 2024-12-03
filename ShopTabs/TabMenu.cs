@@ -271,6 +271,46 @@ namespace ShopTabs
             targetMenu.receiveRightClick(x, y, playSound);
         }
 
+        public override void receiveKeyPress(Keys key)
+        {
+            targetMenu.receiveKeyPress(key);
+        }
+
+        public override void receiveGamePadButton(Buttons button)
+        {
+            currentlySnappedComponent = targetMenu.currentlySnappedComponent;
+            if (currentlySnappedComponent == null)
+            {
+                currentlySnappedComponent = targetMenu.forSaleButtons[0];
+            }
+
+            if (currentlySnappedComponent.myID == 3546 && (button == Buttons.DPadUp || button == Buttons.LeftThumbstickUp))
+            {
+                currentlySnappedComponent = currentTab;
+            }
+            else if (currentlySnappedComponent.myID >= 1000 && currentlySnappedComponent.myID <= 1999)
+            {
+                if (button == Buttons.DPadDown || button == Buttons.LeftThumbstickDown)
+                {
+                    currentlySnappedComponent = targetMenu.forSaleButtons[0];
+                }
+                else if (button == Buttons.DPadLeft || button == Buttons.LeftThumbstickLeft)
+                {
+                    currentlySnappedComponent = getComponentWithID(currentlySnappedComponent.leftNeighborID);
+                }
+                else if (button == Buttons.DPadRight || button == Buttons.LeftThumbstickRight)
+                {
+                    currentlySnappedComponent = getComponentWithID(currentlySnappedComponent.rightNeighborID);
+                }
+            }
+            else
+            {
+                targetMenu.receiveGamePadButton(button);
+                currentlySnappedComponent = targetMenu.currentlySnappedComponent;
+            }
+            targetMenu.currentlySnappedComponent = currentlySnappedComponent;
+        }
+
         public override void receiveScrollWheelAction(int direction)
         {
             targetMenu.receiveScrollWheelAction(direction);
@@ -309,12 +349,8 @@ namespace ShopTabs
 
         public override void snapToDefaultClickableComponent()
         {
-            targetMenu.snapToDefaultClickableComponent();
-        }
-
-        public override void snapCursorToCurrentSnappedComponent()
-        {
-            targetMenu.snapCursorToCurrentSnappedComponent();
+            currentlySnappedComponent = getComponentWithID(3546);
+            snapCursorToCurrentSnappedComponent();
         }
     }
 }
