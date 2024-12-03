@@ -7,6 +7,8 @@ Extract into Mods folder of Stardew Valley.
 # Requirements
 Stardew Valley 1.6.8+
 SMAPI v4.0.7+
+For SDV 1.6.8 use version 1.0.1
+For SDV 1.6.9+ use the latest version
 
 # Known issues:
 - All non-Object type items in the base game (weapon, tools, etc) will be filtered into "Other"
