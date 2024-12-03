@@ -23,6 +23,8 @@ namespace ShopTabs
 
         public ClickableTextureComponent currentTab;
 
+        public int initialMyID = 1000;
+
         // Define filter types and their conditions in a dictionary
         public static readonly Dictionary<string, Func<StardewValley.Object, bool>> FilterConditions = new()
 {
@@ -76,7 +78,10 @@ namespace ShopTabs
                         ModEntry.Translation.Get(filterType),
                         asset,
                         new Rectangle(0, 0, 16, 16),
-                        4f);
+                        4f)
+                    {
+                        myID = initialMyID + i
+                    };
                     filterTabs.Add(tab);
                     i++;
                 }
@@ -91,8 +96,49 @@ namespace ShopTabs
                     ModEntry.Translation.Get("All"),
                     ModEntry.Content.Load<Texture2D>("assets/All"),
                     new Rectangle(0, 0, 16, 16),
-                    4f);
+                    4f)
+                {
+                    myID = 1999
+                };
+
+                setupNeighbors();
+
+                populateClickableComponentList();
             }
+        }
+
+        public void setupNeighbors()
+        {
+            for (int i = 0; i < filterTabs.Count; i++)
+            {
+                filterTabs[i].upNeighborID = -1;
+                filterTabs[i].downNeighborID = 3546;
+                // if the tab is the first one, set the left neighbor to the all tab
+                if (i == 0)
+                {
+                    filterTabs[i].leftNeighborID = 1999;
+                }
+                else
+                {
+                    filterTabs[i].leftNeighborID = filterTabs[i - 1].myID;
+                }
+                // if the tab is the last one, set the right neighbor to the all tab
+                if (i == filterTabs.Count - 1)
+                {
+                    filterTabs[i].rightNeighborID = 1999;
+                }
+                else
+                {
+                    filterTabs[i].rightNeighborID = filterTabs[i + 1].myID;
+                }
+            }
+            // set the all tab neighbors
+            allTab.upNeighborID = -1;
+            allTab.downNeighborID = 3546;
+            allTab.leftNeighborID = filterTabs[filterTabs.Count - 1].myID;
+            allTab.rightNeighborID = filterTabs[0].myID;
+
+            targetMenu.forSaleButtons[0].upNeighborID = 1000;
         }
 
         public void GetAvaliableTabs(Dictionary<ISalable, ItemStockInformation> shopItems)
@@ -223,72 +269,6 @@ namespace ShopTabs
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
             targetMenu.receiveRightClick(x, y, playSound);
-        }
-
-        public override void receiveKeyPress(Keys key)
-        {
-            targetMenu.receiveKeyPress(key);
-        }
-
-        public override void receiveGamePadButton(Buttons button)
-        {
-            currentlySnappedComponent = targetMenu.currentlySnappedComponent;
-            if (currentlySnappedComponent == null)
-            {
-                currentlySnappedComponent = targetMenu.forSaleButtons[0];
-                targetMenu.currentlySnappedComponent = currentlySnappedComponent;
-            }
-
-            // if the current tab is the first in all items that could be sold , snap the cursor to the current tab
-            if (button == Buttons.LeftThumbstickUp && currentlySnappedComponent.myID == 3546)
-            {
-                currentlySnappedComponent = currentTab;
-                targetMenu.currentlySnappedComponent = currentlySnappedComponent;
-            }
-            // else if play left joystick down and current tab is one of filtertabs, snap the cursor to the first shop forsale tab
-            else if (button == Buttons.LeftThumbstickDown && (filterTabs.Contains(currentlySnappedComponent) || currentlySnappedComponent == allTab))
-            {
-                currentlySnappedComponent = targetMenu.forSaleButtons[0];
-                targetMenu.snapToDefaultClickableComponent();
-            }
-            // else if currentlySnappedComponent.myID is -500 and play moves left joystick left and right, move along the tabs, including the all tab
-            else if (currentlySnappedComponent.myID == -500)
-            {
-                int index = filterTabs.IndexOf(currentTab);
-                if (button == Buttons.LeftThumbstickLeft)
-                {
-                    if (index > 0)
-                    {
-                        currentTab = filterTabs[index - 1];
-                    }
-                    else if (currentTab == allTab)
-                    {
-                        currentTab = filterTabs[filterTabs.Count - 1];
-                    }
-                    else
-                    {
-                        currentTab = allTab;
-                    }
-                }
-                else if (button == Buttons.LeftThumbstickRight)
-                {
-                    if (index < filterTabs.Count - 1)
-                    {
-                        currentTab = filterTabs[index + 1];
-                    }
-                    else
-                    {
-                        currentTab = allTab;
-                    }
-                }
-                targetMenu.currentlySnappedComponent = currentTab;
-            }
-            else
-            {
-                targetMenu.receiveGamePadButton(button);
-                Console.WriteLine("default");
-            }
-            Console.WriteLine(targetMenu.currentlySnappedComponent.myID);
         }
 
         public override void receiveScrollWheelAction(int direction)
