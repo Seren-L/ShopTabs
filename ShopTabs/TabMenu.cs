@@ -86,8 +86,6 @@ namespace ShopTabs
                     i++;
                 }
 
-                currentTab = filterTabs[0];
-
                 // add the allTab at the right of the menu
                 allTab = new ClickableTextureComponent(
                     "All",
@@ -100,6 +98,8 @@ namespace ShopTabs
                 {
                     myID = 1999
                 };
+
+                currentTab = allTab;
 
                 setupNeighbors();
 
@@ -218,10 +218,25 @@ namespace ShopTabs
             targetMenu.draw(b);
             foreach (ClickableTextureComponent tab in filterTabs)
             {
+                // reset the tab position
+                tab.bounds.Y = targetMenu.yPositionOnScreen - 60;
+                // if tab is selected, draw the tab lower
+                if (tab == currentTab)
+                {
+                    tab.bounds.Y = targetMenu.yPositionOnScreen - 60 + 8;
+                }
                 tab.draw(b);
             }
             if (allTab != null)
+            {
+                allTab.bounds.Y = targetMenu.yPositionOnScreen - 60;
+                if (allTab == currentTab)
+                {
+                    allTab.bounds.Y = targetMenu.yPositionOnScreen - 60 + 8;
+                }
+
                 allTab.draw(b);
+            }
 
             if (hoveredTab != null)
             {
@@ -247,6 +262,19 @@ namespace ShopTabs
             {
                 allTab.tryHover(x, y);
                 hoveredTab = allTab;
+            }
+
+            // ensure tabs are not enlarged when not hovered
+            foreach (ClickableTextureComponent tab in filterTabs)
+            {
+                if (tab != hoveredTab)
+                {
+                    tab.scale = 4f;
+                }
+            }
+            if (allTab != null && allTab != hoveredTab)
+            {
+                allTab.scale = 4f;
             }
         }
 
@@ -278,6 +306,14 @@ namespace ShopTabs
 
         public override void receiveGamePadButton(Buttons button)
         {
+            if (button == Buttons.LeftShoulder || button == Buttons.RightShoulder)
+            {
+                if (filterTabs.Count != 0)
+                {
+                    processShouldButtons(button);
+                    return;
+                }
+            }
             currentlySnappedComponent = targetMenu.currentlySnappedComponent;
             if (currentlySnappedComponent == null)
             {
@@ -351,6 +387,45 @@ namespace ShopTabs
         {
             currentlySnappedComponent = getComponentWithID(3546);
             snapCursorToCurrentSnappedComponent();
+        }
+
+        public void processShouldButtons(Buttons b)
+        {
+            string currentTabName = currentTab.name;
+            if (b == Buttons.LeftShoulder)
+            {
+                if (currentTabName == "All")
+                {
+                    currentTabName = availableTabs[availableTabs.Count - 1];
+                }
+                else if (availableTabs.IndexOf(currentTabName) == 0)
+                {
+                    currentTabName = "All";
+                }
+                else
+                {
+                    // currentTabName = previous tab in availableTabs
+                    currentTabName = availableTabs[availableTabs.IndexOf(currentTabName) - 1];
+                }
+            }
+            else if (b == Buttons.RightShoulder)
+            {
+                if (currentTabName == "All")
+                {
+                    currentTabName = availableTabs[0];
+                }
+                else if (availableTabs.IndexOf(currentTabName) == availableTabs.Count - 1)
+                {
+                    currentTabName = "All";
+                }
+                else
+                {
+                    // currentTabName = next tab in availableTabs
+                    currentTabName = availableTabs[availableTabs.IndexOf(currentTabName) + 1];
+                }
+
+            }
+            ApplyTab(currentTabName);
         }
     }
 }
