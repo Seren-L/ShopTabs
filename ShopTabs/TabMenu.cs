@@ -246,6 +246,11 @@ namespace ShopTabs
             drawMouse(b);
         }
 
+        public override void leftClickHeld(int x, int y)
+        {
+            targetMenu.leftClickHeld(x, y);
+        }
+
         public override void performHoverAction(int x, int y)
         {
             targetMenu.performHoverAction(x, y);
